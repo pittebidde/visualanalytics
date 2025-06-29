@@ -10,7 +10,7 @@ st.set_page_config(layout="wide")
 # Title row - using columns to center the title
 
 
-st.title("Parkinson detection - Vergleich von gesunden Probanden and Personen mit Parkinsons")
+st.title("Parkinson detection - Vergleich von gesunden Probanden und Personen mit Parkinsons")
 # Load all subject data
 subject_data = {
     "CNNPT_AEPT_TPT": pd.read_csv("CNNCT_AECT_TCT.csv", index_col=0),
