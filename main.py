@@ -10,7 +10,7 @@ st.set_page_config(layout="wide")
 # Title row - using columns to center the title
 
 
-st.title("Parkinson's detection Dashboard")
+st.title("Parkinson detection - Vergleich von gesunden Probanden and Personen mit Parkinsons")
 # Load all subject data
 subject_data = {
     "CNNPT_AEPT_TPT": pd.read_csv("CNNCT_AECT_TCT.csv", index_col=0),
@@ -19,10 +19,10 @@ subject_data = {
     "CNNPT_AECT_TPT": pd.read_csv("CNNPT_AECT_TPT.csv", index_col=0)
 }
 subject_labels = {
-    "CNNCT_AECT_TCT": "Both modells successfully predict Parkinson's",
-    "CNNPT_AEPT_TPT": "Both modells successfully predict Control",
-    "CNNPT_AEPT_TCT": "CNN successfully predict Parkinsons, Autoencoder uncorrectly predicts Control",
-    "CNNPT_AECT_TPT": "Both models fail to predict Control"
+    "CNNCT_AECT_TCT": "Beide Modelle sagen erfolgreich Parkinson voraus",
+    "CNNPT_AEPT_TPT": "Beide Modelle sagen erfolgreich Control voraus",
+    "CNNPT_AECT_TPT": "CNN sagt erfolgreich Parkinson voraus, Autoencoder sagt fälschlicherweise Control voraus",
+    "CNNPT_AEPT_TCT": "Beide Modelle scheitern daran, einen Parkinsons Proband zu identifizieren"
 }
 AE_reconstrution = {
     "AECTTCT.csv": pd.read_csv("AECTTCT.csv", index_col=0),
@@ -31,21 +31,12 @@ AE_reconstrution = {
     "AECTTPT.csv": pd.read_csv("AECTTPT.csv", index_col=0)
 }
 
-colintro, colpicture = st.columns(2)
-
-with colintro:
-    st.markdown("""Dieses Dashboard basiert auf einer Ganganalyse-Datenbank mit Messungen von 93 Parkinson-Patient*innen und 73 gesunden Kontrollpersonen. Ziel der Studie war es, Gangmuster und deren Variabilität bei Morbus Parkinson zu untersuchen – insbesondere unter normalen Bedingungen und während einer kognitiven Doppelaufgabe.
-                Während des Gehens auf ebener Fläche wurden mithilfe von 16 Kraftsensoren (8 pro Fuß) Bodenreaktionskräfte aufgezeichnet (100 Hz). Die Daten ermöglichen die Analyse von Schrittdynamik, zeitlichen Merkmalen wie Schritt- oder Schwungzeit sowie der Gangvariabilität. Zusätzlich liegen demografische Daten und Informationen zum Krankheitsverlauf vor.
-""")
-
-with colpicture:
-    st.image("Sensorsohle.jpg", width=200, ) # caption="Sensore sole that was used to capture data"
 
 
 # Subject selection row
-st.header("Subject Selection")
+st.header("Probandenwahl")
 selected_subject = st.selectbox(
-    "Choose a prediction case to display:",
+    "Szenario:",
     options=list(subject_data.keys()),
     format_func=lambda x: subject_labels[x],  # This shows the friendly label
     index=0,
@@ -56,9 +47,9 @@ selected_subject = st.selectbox(
 current_data = subject_data[selected_subject]
 
 # Determine if control or parkinsons
-subject_type_CNN = "Control" if "CNNCT_AECT_TCT" in selected_subject else "Parkinsons"
-subject_type_AE = "Control" if ("CNNCT_AECT_TCT" in selected_subject) or ("CNNPT_AECT_TPT" in selected_subject) else "Parkinsons"
-subject_type_True = "Control" if ("CNNCT_AECT_TCT" in selected_subject) or ("CNNPT_AEPT_TCT" in selected_subject) else "Parkinsons"
+subject_type_CNN = "Parkinsons" if "CNNCT_AECT_TCT" in selected_subject else "Control"
+subject_type_AE = "Parkinsons" if ("CNNCT_AECT_TCT" in selected_subject) or ("CNNPT_AECT_TPT" in selected_subject) else "Control"
+subject_type_True = "Parkinsons" if ("CNNCT_AECT_TCT" in selected_subject) or ("CNNPT_AEPT_TCT" in selected_subject) else "Control"
 
 
 
@@ -195,14 +186,14 @@ with col4:
         fig.add_trace(go.Scatter(
             x=ae_data_transposed.index,
             y=ae_data_transposed.iloc[:, 0],
-            name="Reconstruction 1",
+            name="Originaldaten",
             line=dict(color='blue')
         ))
     
         fig.add_trace(go.Scatter(
             x=ae_data_transposed.index,
             y=ae_data_transposed.iloc[:, 1],
-            name="Reconstruction 2",
+            name="Rekonstruktion",
             line=dict(color='green')
         ))
     
@@ -238,10 +229,10 @@ with col4:
 ########################
 with col5:
     # Main visualization in the center
-    st.subheader("📊 Sensor Time Series")
+    st.subheader("Rohdatenvisualisierung")
     
     selected_sensors = st.multiselect(
-        "Select sensors to display:",
+        "Rohdaten der Sensoren:",
         options=current_data.columns.tolist(),
         default=current_data.columns[:3].tolist(),
         key="sensor_selector"
@@ -264,20 +255,24 @@ with col6:
     
     # Sample feature importance data - replace this with your actual data
     feature_importance = {
-        "Feature 3": -0.0120,
-        "Feature 15": -0.0040,
-        "Feature 14": 0.0040,
-        "Feature 9": -0.0080,
-        "Feature 2": 0.0080,
-        "Feature 11": -0.0120,
-        "Feature 7": -0.0080,
-        "Feature 5": -0.0201,
-        "Feature 1": 0.0000,
+        "Feature 1": 0.0040,
+        "Feature 2": 0.0000,
+        "Feature 3": 0.0120,
+        "Feature 4": -0.0200,
+        "Feature 5": -0.0040,
+        "Feature 6": -0.0200,
+        "Feature 7": -0.000,
+        "Feature 8": -0.0040,
+        "Feature 9": 0.0120,
+        "Feature 10": 0.0000,
+        "Feature 11": -0.0040,
+        "Feature 12": -0.0040,
         "Feature 13": 0.0040,
-        "Feature 16": -0.0080,
+        "Feature 14": 0.0040,
+        "Feature 15": -0.0040,
+        "Feature 16": -0.0040,
         "Feature 17": -0.0080,
-        "Feature 8": 0.0000,
-        "Feature 10": 0.0000
+        "Feature 18": -0.0120
     }
     
     # Create the plot
